@@ -1,9 +1,12 @@
 from copy import deepcopy
+from urllib.parse import quote_plus
 from future.utils import iteritems
 from datetime import date, datetime
 import pandas as pd
 import numpy as np
 import bt
+import investpy as inv
+import yfinance as yf
 
 def make_data( n_assets=100, n_periods=2000, start_date=date(2021,1,1), phi=0.5, corr=1.0, seed=1234 ):
     ''' Randomly generate a data set consisting of non-stationary prices,
@@ -24,3 +27,9 @@ def make_data( n_assets=100, n_periods=2000, start_date=date(2021,1,1), phi=0.5,
     data = 100. + noise.cumsum()*np.sqrt(0.5) + ar1*np.sqrt(0.5)
     # With the current setup, the difference between any two series should follow a mean reverting process with std=1
     return data
+
+
+def get_brazil_stocks():
+    stocks = inv.get_stocks(country =  "brazil").symbol.to_list()[:30]
+    quotes = yf.download([stock + ".SA" for stock in stocks])["Adj Close"]
+    return quotes
